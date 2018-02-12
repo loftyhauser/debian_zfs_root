@@ -1,13 +1,14 @@
 ####### TROUBLESHOOTING #########
 
 ## Become root and install ZFS utilities
-sudo -i
+#sudo -i
 echo "deb http://ftp.debian.org/debian stretch main contrib" > /etc/apt/sources.list
 apt update
 apt install --yes debootstrap gdisk linux-headers-$(uname -r)
 apt install --yes zfs-dkms
 
 ## Export ZFS and reimport to get mounts right
+/sbin/modprobe zfs
  zpool export -a
  zpool import -N -R /mnt rpool
  zfs mount rpool/ROOT/debian

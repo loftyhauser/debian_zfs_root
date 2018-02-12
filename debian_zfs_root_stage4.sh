@@ -1,7 +1,7 @@
 ## start of stage 4
 echo "Starting stage4.  System should have been rebooted.\n"
 
-YOURUSERNAME = alofthou
+YOURUSERNAME=alofthou
 ## 6.5 Wait for system to boot.  Log in as root.
 
 ## 6.6 Create user account

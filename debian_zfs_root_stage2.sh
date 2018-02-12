@@ -14,7 +14,7 @@ ln -s /proc/self/mounts /etc/mtab
 apt update
 
 echo "Configuring locale.\n"
-apt install --yes locales
+apt install --yes locales vim htop
 dpkg-reconfigure locales
 #locale-gen en_US.UTF-8
 #echo LANG=en_US.UTF-8 > /etc/default/locale

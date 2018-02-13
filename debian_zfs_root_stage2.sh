@@ -27,18 +27,19 @@ echo "==> Configuring timezone.\n"
 dpkg-reconfigure tzdata
 
 echo "==> Installing needed packages (including kernel) in chroot.\n"
-apt install --yes gdisk linux-headers-$(uname -r) linux-image-amd64
+apt install --yes gdisk linux-headers-$(uname -r) linux-image-amd64 vim htop
 
 ## 4.5 Install ZFS in chroot env
 
 apt install --yes zfs-dkms zfs-initramfs
 
 ### LUKS ONLY
-# echo UUID=$(blkid -s UUID -o value /dev/disk/by-id/${HARDDISK}-part4) /boot ext2 defaults 0 2 >> /etc/fstab
+echo "==> LUKS configuration (boot partition and crypttab).\n"
+echo UUID=$(blkid -s UUID -o value /dev/disk/by-id/${HARDDISK}-part4) /boot ext2 defaults 0 2 >> /etc/fstab
 
-# apt install --yes cryptsetup
+apt install --yes cryptsetup
 
-# echo luks1 UUID=$(blkid -s UUID -o value /dev/disk/by-id/${HARDDISK}-part1) none luks,discard,initramfs > /etc/crypttab
+echo luks1 UUID=$(blkid -s UUID -o value /dev/disk/by-id/${HARDDISK}-part1) none luks,discard,initramfs > /etc/crypttab
 
 ## 4.6 Install GRUB
 

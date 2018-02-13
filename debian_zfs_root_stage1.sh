@@ -45,22 +45,22 @@ sgdisk -a1 -n2:34:2047  -t2:EF02 /dev/disk/by-id/${HARDDISK}
 # sgdisk     -n3:1M:+512M -t3:EF00 /dev/disk/by-id/${HARDDISK}
 
 ## unencrypted or cCryptfs
-#echo "==> Creating standard partition and ZFS pool (no LUKS).\n"
-#sgdisk     -n1:0:0      -t1:BF01 /dev/disk/by-id/${HARDDISK}
-#echo "==> Waiting for udev..."
-#sleep 1
-#zpool create -o ashift=12 -O atime=off -O canmount=off -O compression=lz4 -O normalization=formD -O mountpoint=/ -R /mnt rpool /dev/disk/by-id/${HARDDISK}-part1
+echo "==> Creating standard partition and ZFS pool (no LUKS).\n"
+sgdisk     -n1:0:0      -t1:BF01 /dev/disk/by-id/${HARDDISK}
+echo "==> Waiting for udev..."
+sleep 1
+zpool create -o ashift=12 -O atime=off -O canmount=off -O compression=lz4 -O normalization=formD -O mountpoint=/ -R /mnt rpool /dev/disk/by-id/${HARDDISK}-part1
 
 
 ## LUKS
-apt install --yes cryptsetup
-echo "==> Creating boot and LUKS partition.\n"
-sgdisk     -n4:0:+512M  -t4:8300 /dev/disk/by-id/${HARDDISK}
-sgdisk     -n1:0:0      -t1:8300 /dev/disk/by-id/${HARDDISK}
-echo "==> Waiting for udev..."
-sleep 1
-cryptsetup luksFormat -c aes-xts-plain64 -s 256 -h sha256 /dev/disk/by-id/${HARDDISK}-part1
-cryptsetup luksOpen /dev/disk/by-id/${HARDDISK}-part1 luks1
+#apt install --yes cryptsetup
+#echo "==> Creating boot and LUKS partition.\n"
+#sgdisk     -n4:0:+512M  -t4:8300 /dev/disk/by-id/${HARDDISK}
+#sgdisk     -n1:0:0      -t1:8300 /dev/disk/by-id/${HARDDISK}
+#echo "==> Waiting for udev..."
+#sleep 1
+#cryptsetup luksFormat -c aes-xts-plain64 -s 256 -h sha256 /dev/disk/by-id/${HARDDISK}-part1
+#cryptsetup luksOpen /dev/disk/by-id/${HARDDISK}-part1 luks1
 
 echo "==> Creating ZFS pool.\n"
 zpool create -o ashift=12 -O atime=off -O canmount=off -O compression=lz4 -O normalization=formD -O mountpoint=/ -R /mnt rpool /dev/mapper/luks1
@@ -101,10 +101,10 @@ zfs create -o com.sun:auto-snapshot=false -o exec=on  rpool/var/tmp
 # zfs create -o com.sun:auto-snapshot=false -o mountpoint=/var/lib/nfs                 rpool/var/nfs
 
 ## For LUKS install only
-echo "==> Format and mount boot partition.\n"
- mke2fs -t ext2 /dev/disk/by-id/${HARDDISK}-part4
- mkdir /mnt/boot
- mount /dev/disk/by-id/${HARDDISK}-part4 /mnt/boot
+#echo "==> Format and mount boot partition.\n"
+# mke2fs -t ext2 /dev/disk/by-id/${HARDDISK}-part4
+# mkdir /mnt/boot
+# mount /dev/disk/by-id/${HARDDISK}-part4 /mnt/boot
 
 ## 3.5 Install the minimal system
 echo "==> Installing minimal system.\n"

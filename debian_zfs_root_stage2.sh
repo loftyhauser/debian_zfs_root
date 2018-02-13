@@ -34,12 +34,12 @@ apt install --yes gdisk linux-headers-$(uname -r) linux-image-amd64 vim htop
 apt install --yes zfs-dkms zfs-initramfs
 
 ### LUKS ONLY
-echo "==> LUKS configuration (boot partition and crypttab).\n"
-echo UUID=$(blkid -s UUID -o value /dev/disk/by-id/${HARDDISK}-part4) /boot ext2 defaults 0 2 >> /etc/fstab
+#echo "==> LUKS configuration (boot partition and crypttab).\n"
+#echo UUID=$(blkid -s UUID -o value /dev/disk/by-id/${HARDDISK}-part4) /boot ext2 defaults 0 2 >> /etc/fstab
 
-apt install --yes cryptsetup
+#apt install --yes cryptsetup
 
-echo luks1 UUID=$(blkid -s UUID -o value /dev/disk/by-id/${HARDDISK}-part1) none luks,discard,initramfs > /etc/crypttab
+#echo luks1 UUID=$(blkid -s UUID -o value /dev/disk/by-id/${HARDDISK}-part1) none luks,discard,initramfs > /etc/crypttab
 
 ## 4.6 Install GRUB
 
@@ -78,9 +78,9 @@ grub-probe /
 
 ## 5.2 Refresh initrd
 echo "==> Updating the initramfs.\n"
-#update-initramfs -u -k all
+update-initramfs -u -k all
 # or
-update-initramfs -c -k all
+#update-initramfs -c -k all
 
 ## 5.3 (Optional) make debugging GRUB easier
 

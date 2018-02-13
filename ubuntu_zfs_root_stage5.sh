@@ -5,7 +5,7 @@ echo "Starting stage 5, Final Cleanup.\n"
 
 ## 9.2 (Optional) Delete snapshot of initial installation
 echo "Deleting snapshot of initial installation.\n"
-sudo zfs destroy rpool/ROOT/debian@install
+sudo zfs destroy rpool/ROOT/ubuntu@install
 
 ## 9.3 (Optional) Disable root password
 

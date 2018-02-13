@@ -1,5 +1,5 @@
 ## start of stage 2
-HARDDISK = ata-VBOX_HARDDISK_VB882956a1-a319cf41
+HARDDISK=ata-VBOX_HARDDISK_VB882956a1-a319cf41
 
 echo "==> Starting stage2 in chrooted environment.\n"
 ######### IN CHROOTED ENV ########################
@@ -17,7 +17,7 @@ ln -s /proc/self/mounts /etc/mtab
 apt update
 
 echo "==> Installing needed packages (including kernel) in chroot.\n"
-apt install --yes --no-install-recommends linux-image-generic
+apt install --yes --no-install-recommends linux-image-generic vim
 
 ## 4.5 Install ZFS in chroot env
 
@@ -106,7 +106,7 @@ ls /boot/grub/*/zfs.mod
 
 ## 6.1 Snapshot initial installation
 echo "==> Taking initial installation ZFS snapshot.\n"
-zfs snapshot rpool/ROOT/debian@install
+zfs snapshot rpool/ROOT/ubuntu@install
 
 ## 6.2 Exit from chroot
 echo "==> Finished stage2; exiting from chroot...\n"

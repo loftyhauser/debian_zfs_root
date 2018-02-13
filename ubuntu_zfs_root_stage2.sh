@@ -24,12 +24,12 @@ apt install --yes --no-install-recommends linux-image-generic vim
 apt install --yes zfs-initramfs
 
 ### LUKS ONLY
-#echo "==> LUKS configuration (boot partition and crypttab).\n"
-#echo UUID=$(blkid -s UUID -o value /dev/disk/by-id/${HARDDISK}-part4) /boot ext2 defaults 0 2 >> /etc/fstab
+echo "==> LUKS configuration (boot partition and crypttab).\n"
+echo UUID=$(blkid -s UUID -o value /dev/disk/by-id/${HARDDISK}-part4) /boot ext2 defaults 0 2 >> /etc/fstab
 
-#apt install --yes cryptsetup
+apt install --yes cryptsetup
 
-#echo luks1 UUID=$(blkid -s UUID -o value /dev/disk/by-id/${HARDDISK}-part1) none luks,discard,initramfs > /etc/crypttab
+echo luks1 UUID=$(blkid -s UUID -o value /dev/disk/by-id/${HARDDISK}-part1) none luks,discard,initramfs > /etc/crypttab
 
 ## 4.6 Install GRUB
 

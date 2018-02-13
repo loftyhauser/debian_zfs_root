@@ -53,6 +53,7 @@ sgdisk -a1 -n2:34:2047  -t2:EF02 /dev/disk/by-id/${HARDDISK}
 
 
 ## LUKS
+apt install --yes cryptsetup
 echo "==> Creating boot and LUKS partition.\n"
 sgdisk     -n4:0:+512M  -t4:8300 /dev/disk/by-id/${HARDDISK}
 sgdisk     -n1:0:0      -t1:8300 /dev/disk/by-id/${HARDDISK}

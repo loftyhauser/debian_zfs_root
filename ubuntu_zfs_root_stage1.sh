@@ -36,8 +36,9 @@ sgdisk --zap-all /dev/disk/by-id/${HARDDISK}
 ## BIOS boot
 echo "==> Creating BIOS boot partition.\n"
 sgdisk -a1 -n2:34:2047  -t2:EF02 /dev/disk/by-id/${HARDDISK}
-## EFI boot
-# sgdisk     -n3:1M:+512M -t3:EF00 /dev/disk/by-id/${HARDDISK}
+## UEFI boot
+echo "==> UEFI partition.\n"
+ sgdisk     -n3:1M:+512M -t3:EF00 /dev/disk/by-id/${HARDDISK}
 
 ## unencrypted or cCryptfs
 #echo "==> Creating standard partition and ZFS pool (no LUKS).\n"

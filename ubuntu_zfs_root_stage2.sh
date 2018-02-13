@@ -34,16 +34,17 @@ echo luks1 UUID=$(blkid -s UUID -o value /dev/disk/by-id/${HARDDISK}-part1) none
 ## 4.6 Install GRUB
 
 ## MBR booting
-echo "==> Installing grub for MBR booting.\n"
-apt install --yes grub-pc
+#echo "==> Installing grub for MBR booting.\n"
+#apt install --yes grub-pc
 
-## EFI booting
-# apt install dosfstools
-# mkdosfs -F 32 -n EFI /dev/disk/by-id/${HARDDISK}-part3
-# mkdir /boot/efi
-# echo PARTUUID=$(blkid -s PARTUUID -o value /dev/disk/by-id/${HARDDISK}-part3) /boot/efi vfat defaults 0 1 >> /etc/fstab
-# mount /boot/efi
-# apt install --yes grub-efi-amd64
+## UEFI booting
+echo "==> UEFI boot support.\n"
+apt install dosfstools
+mkdosfs -F 32 -n EFI /dev/disk/by-id/${HARDDISK}-part3
+mkdir /boot/efi
+echo PARTUUID=$(blkid -s PARTUUID -o value /dev/disk/by-id/${HARDDISK}-part3) /boot/efi vfat nofail,x-systemd.device-timeout=1 0 1 >> /etc/fstab
+mount /boot/efi
+apt install --yes grub-efi-amd64
 
 echo "==> Setting up system groups.\n"
 addgroup --system lpadmin
@@ -92,11 +93,12 @@ update-grub
 ## 5.5 Install boot loader
 
 ## MBR booting
-echo "==> Installing grub for MBR booting.\n"
-grub-install /dev/disk/by-id/${HARDDISK}
+#echo "==> Installing grub for MBR booting.\n"
+#grub-install /dev/disk/by-id/${HARDDISK}
 
 ## UEFI booting
-# grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=debian --recheck --no-floppy
+echo "==> Installing grub for UEFI booting.\n"
+grub-install --target=x86_64-efi --efi-directory=/boot/efi --bootloader-id=ubuntu --recheck --no-floppy
 
 ## 5.6 Verify that ZFS module is installed
 echo "==> Verifying that ZFS module is installed.  Should see zfs.mod.\n"

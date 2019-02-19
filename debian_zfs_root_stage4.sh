@@ -25,7 +25,10 @@ usermod -a -G audio,cdrom,dip,floppy,netdev,plugdev,sudo,video ${YOURUSERNAME}
 echo "Configuring swap.\n"
 
 ## 7.1 Create zvol for swap
-zfs create -V 4G -b $(getconf PAGESIZE) -o compression=zle -o logbias=throughput -o sync=always -o primarycache=metadata -o secondarycache=none -o com.sun:auto-snapshot=false rpool/swap
+zfs create -V 4G -b $(getconf PAGESIZE) -o compression=zle \
+    -o logbias=throughput -o sync=always \
+    -o primarycache=metadata -o secondarycache=none \
+    -o com.sun:auto-snapshot=false rpool/swap
 
 ## 7.2 Configure swap device
 

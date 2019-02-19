@@ -10,6 +10,7 @@ IFDEVICE=enp0s3
 ## 1.2 Optional start OpenSSH server in LiveCD env
 echo "==> Starting stage1.\n"
 
+#$ sudo apt install --yes openssh-server
 #$ sudo sed -i "s/PasswordAuthentication no/PasswordAuthentication yes/g" /etc/ssh/sshd_config
 #$ sudo service ssh restart
 
@@ -44,12 +45,13 @@ sgdisk -a1 -n2:34:2047  -t2:EF02 /dev/disk/by-id/${HARDDISK}
 ## EFI boot
 # sgdisk     -n3:1M:+512M -t3:EF00 /dev/disk/by-id/${HARDDISK}
 
-## unencrypted or cCryptfs
+## unencrypted or eCryptfs
 echo "==> Creating standard partition and ZFS pool (no LUKS).\n"
 sgdisk     -n1:0:0      -t1:BF01 /dev/disk/by-id/${HARDDISK}
 echo "==> Waiting for udev..."
 sleep 1
-zpool create -o ashift=12 -O atime=off -O canmount=off -O compression=lz4 -O normalization=formD -O mountpoint=/ -R /mnt rpool /dev/disk/by-id/${HARDDISK}-part1
+zpool create -o feature@large_dnode=disabled -o ashift=12 -O atime=off -O canmount=off -O compression=lz4 -O normalization=formD -O mountpoint=/ -R /mnt rpool /dev/disk/by-id/${HARDDISK}-part1
+# Linux-only: -O xattr=sa
 
 
 ## LUKS
@@ -63,7 +65,7 @@ zpool create -o ashift=12 -O atime=off -O canmount=off -O compression=lz4 -O nor
 #cryptsetup luksOpen /dev/disk/by-id/${HARDDISK}-part1 luks1
 
 #echo "==> Creating ZFS pool.\n"
-#zpool create -o ashift=12 -O atime=off -O canmount=off -O compression=lz4 -O normalization=formD -O mountpoint=/ -R /mnt rpool /dev/mapper/luks1
+#zpool create -o feature@large_dnode=disabled -o ashift=12 -O atime=off -O canmount=off -O compression=lz4 -O normalization=formD -O xattr=sa -O mountpoint=/ -R /mnt rpool /dev/mapper/luks1
 
 ## 3. System Installation
 
@@ -88,8 +90,15 @@ zfs create                                            rpool/var/log
 zfs create                                            rpool/var/spool
 zfs create -o com.sun:auto-snapshot=false -o exec=on  rpool/var/tmp
 
+#If you use /opt on this system:
+# zfs create                                            rpool/opt
+
 #If you use /srv on this system:
 # zfs create                                            rpool/srv
+
+#If you use /usr/local/on this system:
+# zfs create -o canmount=off                            rpool/usr
+# zfs create                                            rpool/usr/local
 
 #If this system will have games installed:
 # zfs create                                            rpool/var/games
@@ -97,8 +106,18 @@ zfs create -o com.sun:auto-snapshot=false -o exec=on  rpool/var/tmp
 #If this system will store local email in /var/mail:
 # zfs create                                            rpool/var/mail
 
+#If this system will use Docker (which manages its own datasets and snapshots)
+# zfs create -o com.sun:auto-snapshot=false \
+#            -o mountpoint=/var/lib/docker              rpool/var/docker
+
 #If this system will use NFS (locking):
-# zfs create -o com.sun:auto-snapshot=false -o mountpoint=/var/lib/nfs                 rpool/var/nfs
+# zfs create -o com.sun:auto-snapshot=false \
+#            -o mountpoint=/var/lib/nfs                 rpool/var/nfs
+
+# If you want a separate /tmp dataset (choose this now or tmpfs later):
+# zfs create -o com.sun:auto-snapshot=false \
+#            -o setuid=off                              rpool/tmp
+# chmod 1777 /mnt/tmp
 
 ## For LUKS install only
 #echo "==> Format and mount boot partition.\n"
@@ -127,6 +146,11 @@ cat >> /mnt/etc/network/interfaces.d/${IFDEVICE} << EOF
 auto ${IFDEVICE}
 iface ${IFDEVICE} inet dhcp
 EOF
+
+## 4.2.5 Add contrib archive area:
+# vi /mnt/etc/apt/sources.list
+# deb http://ftp.debian.org/debian stretch main contrib
+# deb-src http://ftp.debian.org/debian stretch main contrib
 
 ## 4.3 Bind mount virtual filesystems to new system and chroot
 

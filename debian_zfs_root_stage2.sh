@@ -27,7 +27,7 @@ echo "==> Configuring timezone.\n"
 dpkg-reconfigure tzdata
 
 echo "==> Installing needed packages (including kernel) in chroot.\n"
-apt install --yes gdisk linux-headers-$(uname -r) linux-image-amd64 vim htop
+apt install --yes dpkg-dev linux-headers-$(uname -r) linux-image-amd64 vim htop
 
 ## 4.5 Install ZFS in chroot env
 
@@ -51,7 +51,9 @@ apt install --yes grub-pc
 # apt install dosfstools
 # mkdosfs -F 32 -n EFI /dev/disk/by-id/${HARDDISK}-part3
 # mkdir /boot/efi
-# echo PARTUUID=$(blkid -s PARTUUID -o value /dev/disk/by-id/${HARDDISK}-part3) /boot/efi vfat defaults 0 1 >> /etc/fstab
+# echo PARTUUID=$(blkid -s PARTUUID -o value \
+#      /dev/disk/by-id/${HARDDISK}-part3)    \
+#      /boot/efi vfat noatime,nofail,x-systemd.device-timeout=1 0 1 >> /etc/fstab
 # mount /boot/efi
 # apt install --yes grub-efi-amd64
 
@@ -59,14 +61,23 @@ apt install --yes grub-pc
 echo "==> Setting root password.\n"
 passwd
 
-## 4.8 Filesystem mount ordering (not sure if needed in Debian)
+## 4.8 Filesystem mount ordering
 echo "==> Filesystem mount ordering (systemd doesn't understand zfs).\n"
 zfs set mountpoint=legacy rpool/var/log
 zfs set mountpoint=legacy rpool/var/tmp
 cat >> /etc/fstab << EOF
-rpool/var/log /var/log zfs defaults 0 0
-rpool/var/tmp /var/tmp zfs defaults 0 0
+rpool/var/log /var/log zfs noatime,nodev,noexec,nosuid 0 0
+rpool/var/tmp /var/tmp zfs noatime,nodev,noexec,nosuid 0 0
 EOF
+
+# If using a tmp dataset:
+# zfs set mountpoint=legacy rpool/tmp
+# cat >> /etc/fstab << EOF
+# rpool/tmp /tmp zfs noatime,nodev,nosuid 0 0
+
+## Optional: Mount a tmpfs to /tmp
+# cp /usr/share/systemd/tmp.mount /etc/systemd/system/
+# systemctl enable tmp.mount
 
 ## 5. GRUB installation
 
